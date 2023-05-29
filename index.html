@@ -1,0 +1,106 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bangkok Tour Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+    crossorigin="" />
+ 
+    <!-- W3 CSS template -->
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" />
+ 
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+    crossorigin="">
+    </script>
+        <style>
+            #mapid {
+                height: 800px;
+        }
+        </style>
+
+</head>
+<body>
+    <div class="w3-row">
+        <div id="mapid"class="w3-half"></div>
+            <div id="content"class="w3-half">
+                <table class="w3-table w3-striped">
+    <tr>
+    <th>ชื่อร้านอาหาร</th>
+    <th>ประเภท</th>
+    <th>ระดับ</th>
+    </tr>
+    <tr>
+    <td>น้ำตก A</td>
+    <td>ธรรมชาติ</td>
+    <td>A</td>
+    </tr>
+    </table>
+    </div>
+    </div>
+    <script src = "bkktourpoint.js"></script>
+    
+    <script>
+        var map = L.map("mapid").setView([13.7487110030383489, 100.51313395357339], 11);
+     
+        var osm = L.tileLayer(
+            "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            ).addTo(map);
+            var Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+	        attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+            }).addTo(map);;
+     
+        var baseMaps = {
+            OSM: osm,
+            EsriWorldImagery: Esri_WorldImagery,
+        };
+        var tourLayer = L.geoJSON(bkkfoodpoint, {
+        pointToLayer: function (feature, latlng) {
+        return L.marker(latlng).bindPopup(feature.properties.name);
+        },
+        onEachFeature: function (feature, layer) {
+        layer.on("mouseover", function () {
+        document
+        .getElementById(feature.properties.name)
+        .classList.add("w3-red");
+        });
+ 
+        layer.on("mouseout", function () {
+        document
+        .getElementById(feature.properties.name)
+        .classList.remove("w3-red");
+        });
+        },
+        }).addTo(map);
+ 
+    var cont = "";
+        cont += "<table class='w3-table w3-striped'>";
+        cont += "<tr>";
+        cont += "<th>ชื่อร้านอาหาร</th>";
+        cont += "<th>ประเภท</th>";
+        cont += "<th>ระดับ</th>";
+         cont += "</tr>";
+        for (let i in bkkfoodpoint.features) {
+        cont += "<tr id=" + bkkfoodpoint.features[i].properties.name + ">";
+        cont += "<td>" + bkkfoodpoint.features[i].properties.name + "</td>";
+        cont += "<td>" + bkkfoodpoint.features[i].properties.type + "</td>";
+        cont += "<td>" + bkkfoodpoint.features[i].properties.level + "</td>";
+        cont += "</tr>";
+        }
+    cont += "</table>";
+    console.log(cont);
+    document.getElementById("content").innerHTML = cont;
+
+    var overlays = {สถานที่ท่องเที่ยว: tourLayer};
+    //add leyer control
+    L.control.layers(baseMaps, overlays).addTo(map);
+    
+
+</script>
+
+
+
+</body>
+</html>
